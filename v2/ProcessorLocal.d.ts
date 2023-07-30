@@ -1,7 +1,7 @@
 /// <reference types="bluebird" />
 /// <reference types="node" />
-import { Processor, ProcessLineResult } from "./Processor";
 import P from "bluebird";
+import { ProcessLineResult, Processor } from "./Processor";
 export declare class ProcessorLocal extends Processor {
     flush(): P<ProcessLineResult[]>;
     destroy(): P<void>;

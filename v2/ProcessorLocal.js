@@ -9,19 +9,54 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var Processor_1 = require("./Processor");
 var bluebird_1 = __importDefault(require("bluebird"));
-var dataClean_1 = require("./dataClean");
-var getEol_1 = __importDefault(require("./getEol"));
-var fileline_1 = require("./fileline");
-var util_1 = require("./util");
-var rowSplit_1 = require("./rowSplit");
-var lineToJson_1 = __importDefault(require("./lineToJson"));
 var CSVError_1 = __importDefault(require("./CSVError"));
+var Processor_1 = require("./Processor");
+var dataClean_1 = require("./dataClean");
+var fileline_1 = require("./fileline");
+var getEol_1 = __importDefault(require("./getEol"));
+var lineToJson_1 = __importDefault(require("./lineToJson"));
+var rowSplit_1 = require("./rowSplit");
+var util_1 = require("./util");
 var ProcessorLocal = /** @class */ (function (_super) {
     __extends(ProcessorLocal, _super);
     function ProcessorLocal() {
@@ -38,9 +73,9 @@ var ProcessorLocal = /** @class */ (function (_super) {
         if (this.runtime.csvLineBuffer && this.runtime.csvLineBuffer.length > 0) {
             var buf = this.runtime.csvLineBuffer;
             this.runtime.csvLineBuffer = undefined;
-            return this.process(buf, true)
-                .then(function (res) {
-                if (_this.runtime.csvLineBuffer && _this.runtime.csvLineBuffer.length > 0) {
+            return this.process(buf, true).then(function (res) {
+                if (_this.runtime.csvLineBuffer &&
+                    _this.runtime.csvLineBuffer.length > 0) {
                     return bluebird_1.default.reject(CSVError_1.default.unclosed_quote(_this.runtime.parsedLineNumber, _this.runtime.csvLineBuffer.toString()));
                 }
                 else {
@@ -135,8 +170,7 @@ var ProcessorLocal = /** @class */ (function (_super) {
                 prom = bluebird_1.default.resolve(stringToLineResult.lines);
             }
             return prom.then(function (lines) {
-                if (!runtime.started
-                    && !_this.runtime.headers) {
+                if (!runtime.started && !_this.runtime.headers) {
                     return _this.processDataWithHead(lines);
                 }
                 else {
@@ -149,48 +183,54 @@ var ProcessorLocal = /** @class */ (function (_super) {
         }
     };
     ProcessorLocal.prototype.processDataWithHead = function (lines) {
-        if (this.params.noheader) {
-            if (this.params.headers) {
-                this.runtime.headers = this.params.headers;
-            }
-            else {
-                this.runtime.headers = [];
-            }
-        }
-        else {
-            var left = "";
-            var headerRow = [];
-            while (lines.length) {
-                var line = left + lines.shift();
-                var row = this.rowSplit.parse(line);
-                if (row.closed) {
-                    headerRow = row.cells;
-                    left = "";
-                    break;
+        return __awaiter(this, void 0, void 0, function () {
+            var left, headerRow, line, row;
+            return __generator(this, function (_a) {
+                if (this.params.noheader) {
+                    if (this.params.headers) {
+                        this.runtime.headers = this.params.headers;
+                    }
+                    else {
+                        this.runtime.headers = [];
+                    }
                 }
                 else {
-                    left = line + getEol_1.default(line, this.runtime);
+                    left = "";
+                    headerRow = [];
+                    while (lines.length) {
+                        line = left + lines.shift();
+                        row = this.rowSplit.parse(line);
+                        if (row.closed) {
+                            headerRow = row.cells;
+                            left = "";
+                            break;
+                        }
+                        else {
+                            left = line + getEol_1.default(line, this.runtime);
+                        }
+                    }
+                    this.prependLeftBuf(util_1.bufFromString(left));
+                    if (headerRow.length === 0) {
+                        return [2 /*return*/, []];
+                    }
+                    if (this.params.headers) {
+                        this.runtime.headers = this.params.headers;
+                    }
+                    else {
+                        this.runtime.headers = headerRow;
+                    }
                 }
-            }
-            this.prependLeftBuf(util_1.bufFromString(left));
-            if (headerRow.length === 0) {
-                return [];
-            }
-            if (this.params.headers) {
-                this.runtime.headers = this.params.headers;
-            }
-            else {
-                this.runtime.headers = headerRow;
-            }
-        }
-        if (this.runtime.needProcessIgnoreColumn || this.runtime.needProcessIncludeColumn) {
-            this.filterHeader();
-        }
-        if (this.needEmitHead && !this.headEmitted) {
-            this.converter.emit("header", this.runtime.headers);
-            this.headEmitted = true;
-        }
-        return this.processCSVBody(lines);
+                if (this.runtime.needProcessIgnoreColumn ||
+                    this.runtime.needProcessIncludeColumn) {
+                    this.filterHeader();
+                }
+                if (this.needEmitHead && !this.headEmitted) {
+                    this.converter.emit("header", this.runtime.headers);
+                    this.headEmitted = true;
+                }
+                return [2 /*return*/, this.processCSVBody(lines)];
+            });
+        });
     };
     ProcessorLocal.prototype.filterHeader = function () {
         this.runtime.selectedColumns = [];
@@ -199,7 +239,8 @@ var ProcessorLocal = /** @class */ (function (_super) {
             for (var i = 0; i < headers.length; i++) {
                 if (this.params.ignoreColumns) {
                     if (this.params.ignoreColumns.test(headers[i])) {
-                        if (this.params.includeColumns && this.params.includeColumns.test(headers[i])) {
+                        if (this.params.includeColumns &&
+                            this.params.includeColumns.test(headers[i])) {
                             this.runtime.selectedColumns.push(i);
                         }
                         else {
@@ -234,28 +275,33 @@ var ProcessorLocal = /** @class */ (function (_super) {
         }
     };
     ProcessorLocal.prototype.processCSVBody = function (lines) {
-        if (this.params.output === "line") {
-            return lines;
-        }
-        else {
-            var result = this.rowSplit.parseMultiLines(lines);
-            this.prependLeftBuf(util_1.bufFromString(result.partial));
-            if (this.params.output === "csv") {
-                return result.rowsCells;
-            }
-            else {
-                return lineToJson_1.default(result.rowsCells, this.converter);
-            }
-        }
-        // var jsonArr = linesToJson(lines.lines, params, this.recordNum);
-        // this.processResult(jsonArr);
-        // this.lastIndex += jsonArr.length;
-        // this.recordNum += jsonArr.length;
+        return __awaiter(this, void 0, void 0, function () {
+            var result;
+            return __generator(this, function (_a) {
+                if (this.params.output === "line") {
+                    return [2 /*return*/, lines];
+                }
+                else {
+                    result = this.rowSplit.parseMultiLines(lines);
+                    this.prependLeftBuf(util_1.bufFromString(result.partial));
+                    if (this.params.output === "csv") {
+                        return [2 /*return*/, result.rowsCells];
+                    }
+                    else {
+                        return [2 /*return*/, lineToJson_1.default(result.rowsCells, this.converter)];
+                    }
+                }
+                return [2 /*return*/];
+            });
+        });
     };
     ProcessorLocal.prototype.prependLeftBuf = function (buf) {
         if (buf) {
             if (this.runtime.csvLineBuffer) {
-                this.runtime.csvLineBuffer = Buffer.concat([buf, this.runtime.csvLineBuffer]);
+                this.runtime.csvLineBuffer = Buffer.concat([
+                    buf,
+                    this.runtime.csvLineBuffer,
+                ]);
             }
             else {
                 this.runtime.csvLineBuffer = buf;

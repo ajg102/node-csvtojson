@@ -17,7 +17,6 @@ var stream_1 = require("stream");
 var Parameters_1 = require("./Parameters");
 var ParseRuntime_1 = require("./ParseRuntime");
 var bluebird_1 = __importDefault(require("bluebird"));
-// import { ProcessorFork } from "./ProcessFork";
 var ProcessorLocal_1 = require("./ProcessorLocal");
 var Result_1 = require("./Result");
 var Converter = /** @class */ (function (_super) {
@@ -29,14 +28,8 @@ var Converter = /** @class */ (function (_super) {
         _this.params = Parameters_1.mergeParams(param);
         _this.runtime = ParseRuntime_1.initParseRuntime(_this);
         _this.result = new Result_1.Result(_this);
-        // if (this.params.fork) {
-        //   this.processor = new ProcessorFork(this);
-        // } else {
         _this.processor = new ProcessorLocal_1.ProcessorLocal(_this);
-        // }
         _this.once("error", function (err) {
-            // console.log("BBB");
-            //wait for next cycle to emit the errors.
             setImmediate(function () {
                 _this.result.processError(err);
                 _this.emit("done", err);
@@ -66,19 +59,13 @@ var Converter = /** @class */ (function (_super) {
     Converter.prototype.fromFile = function (filePath, options) {
         var _this = this;
         var fs = require("fs");
-        // var rs = null;
-        // this.wrapCallback(cb, function () {
-        //   if (rs && rs.destroy) {
-        //     rs.destroy();
-        //   }
-        // });
         fs.exists(filePath, function (exist) {
             if (exist) {
                 var rs = fs.createReadStream(filePath, options);
                 rs.pipe(_this);
             }
             else {
-                _this.emit('error', new Error(`File does not exist at ${filePath}. Check to make sure the file path to your csv is correct.`));
+                _this.emit('error', new Error("File does not exist at " + filePath + ". Check to make sure the file path to your csv is correct."));
             }
         });
         return this;
@@ -96,7 +83,7 @@ var Converter = /** @class */ (function (_super) {
                 this.push(null);
             }
             else {
-                var str = csvString.substr(idx, size);
+                var str = csvString.substring(idx, idx + size);
                 this.push(str);
                 idx += size;
             }
